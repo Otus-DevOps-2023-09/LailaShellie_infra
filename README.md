@@ -6,6 +6,7 @@ LailaShellie Infra repository
 ##Подключение по алиасу
 Сначала требуется добавить хосты в ~/.ssh/config
 >vim ~/.ssh/config
+
 Пишем:
 ```
 Host bastion
