@@ -1,0 +1,44 @@
+#cloud-config
+users:
+  - name: yc-user
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9bRDZ7UstG8+KP3VoleVF1ohofqFz4ZygnzTdEKXyvjVChytcxAQsUJx3LD3hozHsXuEr/a/H2isl1rUn572lU2V1X2Z4yMXJriQCrZbtCI/vA5prFIEXo4szdV3MsIyZXoXD/cMfoZVuZ4VC7xLXb1G7Y06FGJPEFu9WnGoAexm/6bCM9IqkMoRCkXTSS6bDnXbE1SAPGhiZhmVIozgadTWjl2a8DeSnKvOCwEAHBAd9zTkuwFC+ZEnWg6Zif3aBRVgeXoQxjBxcp7bl5rosnCs53vE/ahVc3BccNrDueducAyZN1Vi+YmZnfWVvhG47wojprn2LArGeWW7OzTnAwGTiOcntfpn8uCjxPVRza0oesRVL/prhVFd/1xisN3eUpCV+pV6H93pjL+rM4gX2V/p8PvkJfI8hnfplD2erVCgv5WSIy12fmU0njtkncRgeG7oFRcgSZeaKpbAWofnNtGoGUUsd0l6J8Ok1kXEjLu2J8msQw/uXPYqdoPx1Pwk= appuser
+
+write_files:
+  - path: /home/yc-user/install_ruby.sh
+    permissions: "0755"
+    content: |
+        #!/bin/sh
+        sudo apt update
+        sudo apt install -y ruby-full ruby-bundler build-essential
+        sleep 5
+  - path: /home/yc-user/install_mongodb.sh
+    permissions: "0755"
+    content: |
+        #!/bin/sh
+        sudo apt update
+        sudo apt install mongodb -y
+        sleep 5
+        sudo systemctl enable mongodb
+        sudo systemctl start mongodb
+
+  - path: /home/yc-user/deploy.sh
+    permissions: "0755"
+    content: |
+        #!/bin/sh
+        cd /home/yc-user/
+        sudo apt update
+        sudo apt install git -y
+        sleep 5
+        git clone -b monolith https://github.com/express42/reddit.git && cd reddit
+        sleep 5
+        bundle install && puma -d
+
+
+runcmd:
+  - [ bash, "/home/yc-user/install_ruby.sh"]
+  - [ bash, "/home/yc-user/install_mongodb.sh"]
+  - [ bash, "/home/yc-user/deploy.sh"]
