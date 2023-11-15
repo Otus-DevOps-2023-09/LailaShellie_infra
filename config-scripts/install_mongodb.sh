@@ -1,3 +1,3 @@
 #!/bin/sh
-sudo apt update
-sudo apt install mongodb -y
+apt update
+apt install mongodb -y
